@@ -164,11 +164,8 @@ def start_annotation(h5_path):
                 color={1: 'red'}
             )
 
-
     # 添加到右侧控件栏
     viewer.window.add_dock_widget(noise_mask_widget, area='right')
-
-
 
     # 假设 h5_path 是你读取的原始 HDF5 文件路径（字符串）
 
