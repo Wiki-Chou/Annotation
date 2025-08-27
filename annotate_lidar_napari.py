@@ -9,12 +9,13 @@ import matplotlib.pyplot  as plt#194
 # ----------------------------
 # 通道映射 + 归一化标准
 # ----------------------------
-channel_norm_ranges = {
-    'CH355': (0, 200000),
-    'CH532': (0, 200000),
-    'CH1064': (0, 200000),
-    'PDR355': (0, 1),
-    'PDR532': (0, 1)
+normalize_range={
+    51628: {"CH355": 3.948e+05, "CH532": 5.169e+05 , "CH1064": 2.283e+05
+    },
+    53845: {"CH355": 4.158e+05, "CH532": 4.750e+05, "CH1064": 2.294e+05
+    },
+    58847: {"CH355": 4.547e+05, "CH532": 3.911e+05, "CH1064": 2.321e+05
+    }
 }
 
 channel_keys = ['CH355', 'CH532', 'CH1064', 'PDR355', 'PDR532']
@@ -38,6 +39,19 @@ def normalize_to_unit_range(data, min_val, max_val):
 
 
 def start_annotation(h5_path):
+    #识别是哪个站点
+    file_stem = Path(h5_path).stem
+    file_stem = int(file_stem)
+    CH355max = normalize_range[file_stem]["CH355"]
+    CH532max = normalize_range[file_stem]["CH532"]
+    CH1064max = normalize_range[file_stem]["CH1064"]
+    channel_norm_ranges = {
+    'CH355': (0, CH355max),
+    'CH532': (0, CH532max),
+    'CH1064': (0, CH1064max),
+    'PDR355': (0, 1),
+    'PDR532': (0, 1)
+    }
     # 1. 加载数据和 mask
     data_dict = load_lidar_channels(h5_path)
     
@@ -175,7 +189,7 @@ def start_annotation(h5_path):
         if mask_layer is not None:
             # 构造基础输出路径
             input_path = Path(h5_path)
-            base_output = Path(h5_path.replace('result', 'mask')).with_suffix('.tif')
+            base_output = Path(h5_path.replace('CMA', 'mask')).with_suffix('.tif')
 
             # 检查是否存在，自动生成不重复路径
             output_path = base_output
@@ -208,11 +222,6 @@ if __name__ == '__main__':
         print(f"❌ 指定的文件不存在: {h5_file}")
         sys.exit(1)'''
     
-    h5_file=r"F:\Workspace\Projects\LidarCloud\CMA\2025\2025\0114\51628.h5"
+    h5_file=r"F:\Workspace\Projects\LidarCloud\CMA\2025\2025\0115\58847.h5"
     #h5_file=r"E:\Project\Lidar-cloud-CMA\result\2025\0101\51628.h5"
     start_annotation(h5_file)
-    #sample1: h5_file=r"F:\Workspace\Projects\LidarCloud\CMA\2025\2025\0102\51628.h5" 要点：噪声下该如何进行标注；解释一下通道、退偏；
-    #sample2: h5_file=r"F:\Workspace\Projects\LidarCloud\CMA\2025\2025\0102\58847.h5" 要点：单独标记：疑似对流层顶云。后期结合无线电探空进行探索
-    #sample3: h5_file=r"F:\Workspace\Projects\LidarCloud\CMA\2025\2025\0106\53845.h5" 要点：很好的沙尘或其他气溶胶传输的例子，很重要。非常规
-    #sample4: h5_file=r"F:\Workspace\Projects\LidarCloud\CMA\2025\2025\0108\51628.h5" 要点：低云是的，高云是的，复杂 yes；分等级的标注。（一共1~4个等级） 1.对流层顶有+1 2.云顶衰减后只有提退偏比有+1 3.云量大，形状复杂+1
-    #sample5: h5_file=r"F:\Workspace\Projects\LidarCloud\CMA\2025\2025\0110\51628.h5" 要点：特殊情况进行备注如：日间约第40个距离门存在疑似阻隔。（11日同）  14日仪器好转 或为过强沙尘传输
