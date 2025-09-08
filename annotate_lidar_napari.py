@@ -222,6 +222,6 @@ if __name__ == '__main__':
         print(f"❌ 指定的文件不存在: {h5_file}")
         sys.exit(1)'''
     
-    h5_file=r"F:\Workspace\Projects\LidarCloud\CMA\2025\2025\0115\58847.h5"
+    h5_file=r"F:\Workspace\Projects\LidarCloud\CMA\2025\2025\0111\53845.h5"
     #h5_file=r"E:\Project\Lidar-cloud-CMA\result\2025\0101\51628.h5"
     start_annotation(h5_file)
